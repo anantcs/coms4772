@@ -16,7 +16,7 @@ from mysklearn import NewMiniBatchDictionaryLearning
 
 # In[2]:
 
-def read(dataset = "training", path = "../Desktop/coms4772/dataset/"):
+def read(dataset = "training", path = "../dataset/"):
     if dataset is "training":
         fname_img = os.path.join(path+"/train", 'train-images-idx3-ubyte')
         fname_lbl = os.path.join(path+"train", 'train-labels-idx1-ubyte')
@@ -63,7 +63,7 @@ for label,img in read("training"):
 
 X = np.array(X)
 t0 = time()
-vader = NewMiniBatchDictionaryLearning(n_components=100, alpha=1, n_iter=500)
+vader = NewMiniBatchDictionaryLearning(n_components=100, alpha=1, n_iter=500,transform_algorithm='elastic_net')
 V = vader.fit(X).components_
 U = vader.transform(X)
 
