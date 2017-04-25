@@ -21,8 +21,7 @@ from sklearn.utils import (check_array, check_random_state, gen_even_slices,
                      gen_batches, _get_n_jobs)
 from sklearn.utils.extmath import randomized_svd, row_norms
 from sklearn.utils.validation import check_is_fitted
-from sklearn.linear_model import Lasso, orthogonal_mp_gram, LassoLars, Lars
-
+from sklearn.linear_model import Lasso, orthogonal_mp_gram, LassoLars, Lars, ElasticNet
 
 def _sparse_encode(X, dictionary, gram, cov=None, algorithm='lasso_lars',
                    regularization=None, copy_cov=True,
@@ -114,6 +113,7 @@ def _sparse_encode(X, dictionary, gram, cov=None, algorithm='lasso_lars',
         finally:
             np.seterr(**err_mgt)
 
+
     elif algorithm == 'lasso_cd':
         alpha = float(regularization) / n_features  # account for scaling
 
@@ -142,7 +142,18 @@ def _sparse_encode(X, dictionary, gram, cov=None, algorithm='lasso_lars',
             new_code = lars.coef_
         finally:
             np.seterr(**err_mgt)
+    elif algorithm == 'elastic_net':
+        try:
+            err_mgt = np.seterr(all='ignore')
 
+            # Not passing in verbose=max(0, verbose-1) because Lars.fit already
+            # corrects the verbosity level.
+            enet = ElasticNet(fit_intercept=False, normalize=False,
+                        precompute=gram,l1_ratio=0.7,alpha=0.01)
+            enet.fit(dictionary.T, X.T)
+            new_code = enet.coef_
+        finally:
+            np.seterr(**err_mgt)
     elif algorithm == 'threshold':
         new_code = ((np.sign(cov) *
                     np.maximum(np.abs(cov) - regularization, 0)).T)
@@ -534,7 +545,7 @@ def dict_learning(X, n_components, alpha, max_iter=100, tol=1e-8,
 
         # Cost function
         beta = 0.1
-        current_cost = 0.5 * residuals + alpha * np.sum(np.abs(code)) + beta*(linalg.norm(code,2))**2
+        current_cost = 0.5 * residuals + alpha * np.sum(np.abs(code)) + beta*(linalg.norm(dictionary,2))**2
         errors.append(current_cost)
 
         if ii > 0:
