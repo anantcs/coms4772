@@ -7,7 +7,7 @@ Loosely inspired by http://abel.ee.ucla.edu/cvxopt/_downloads/mnist.py
 which is GPL licensed.
 """
 
-def read(dataset = "train", path = "dataset/train"):
+def read(dataset = "train", path = "../dataset/train"):
     """
     Python function for importing the MNIST data set.  It returns an iterator
     of 2-tuples with the first element being the label and the second element
