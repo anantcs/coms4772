@@ -23,6 +23,8 @@ from sklearn.utils.extmath import randomized_svd, row_norms
 from sklearn.utils.validation import check_is_fitted
 from sklearn.linear_model import Lasso, orthogonal_mp_gram, LassoLars, Lars, ElasticNet
 
+from fista import fista
+
 def _sparse_encode(X, dictionary, gram, cov=None, algorithm='lasso_lars',
                    regularization=None, copy_cov=True,
                    init=None, max_iter=1000, check_input=True, verbose=0):
@@ -152,6 +154,13 @@ def _sparse_encode(X, dictionary, gram, cov=None, algorithm='lasso_lars',
                         precompute=gram,l1_ratio=0.7,alpha=0.01)
             enet.fit(dictionary.T, X.T)
             new_code = enet.coef_
+        finally:
+            np.seterr(**err_mgt)
+    elif algorithm == 'fista':
+        try:
+            err_mgt = np.seterr(all='ignore')
+            w = fista(dictionary.T, X.T, alpha, 1000)
+            new_code = w
         finally:
             np.seterr(**err_mgt)
     elif algorithm == 'threshold':

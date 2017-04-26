@@ -63,8 +63,11 @@ for label,img in read("training"):
 
 X = np.array(X)
 t0 = time()
+print("Calling New Mini Batch Dictionary Learning")
 vader = NewMiniBatchDictionaryLearning(n_components=100, alpha=1, n_iter=500,transform_algorithm='elastic_net')
+print("Done with New Mini Batch Dictionary")
 V = vader.fit(X).components_
+print("Done with V", V.shape)
 U = vader.transform(X)
 
 
