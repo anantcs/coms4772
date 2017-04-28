@@ -159,7 +159,8 @@ def _sparse_encode(X, dictionary, gram, cov=None, algorithm='lasso_lars',
     elif algorithm == 'fista':
         try:
             err_mgt = np.seterr(all='ignore')
-            w = fista(dictionary.T, X.T, alpha, 1000)
+            w = fista(dictionary.T, X.T, 0.01, 10)
+            print(w.shape)
             new_code = w
         finally:
             np.seterr(**err_mgt)

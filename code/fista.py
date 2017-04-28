@@ -5,7 +5,7 @@ from scipy import linalg
 
 
 def fista(A, b, l, maxit):
-    x = np.zeros(A.shape[1])
+    x = np.zeros((A.shape[1],b.shape[1]))
     pobj = []
     t = 1
     z = x.copy()
@@ -23,3 +23,6 @@ def fista(A, b, l, maxit):
 
     times, pobj = map(np.array, zip(*pobj))
     return x
+
+def soft_thresh(x, l):
+    return np.sign(x) * np.maximum(np.abs(x) - l, 0.)

@@ -64,19 +64,19 @@ for label,img in read("training"):
 X = np.array(X)
 t0 = time()
 print("Calling New Mini Batch Dictionary Learning")
-vader = NewMiniBatchDictionaryLearning(n_components=100, alpha=1, n_iter=500,transform_algorithm='elastic_net')
+vader = NewMiniBatchDictionaryLearning(n_components=100, alpha=1, n_iter=500,transform_algorithm='fista')
 print("Done with New Mini Batch Dictionary")
 V = vader.fit(X).components_
 print("Done with V", V.shape)
-U = vader.transform(X)
+
 
 
 # We transform the image space into representation space
 
 # In[4]:
 
-U = vader.transform(X)
-U.shape
+U = vader.transform(X).T
+print U.shape
 
 
 # We then train a Knn classifier on the transformed space and test images
@@ -95,7 +95,7 @@ for label,img in read("testing"):
 #X_test = vader.transform(X_test)
 nbrs = KNeighborsClassifier(n_neighbors=3)
 nbrs.fit(U,y)
-my_x = vader.transform(X_test)
+my_x = vader.transform(X_test).T
 
 
 # In[6]:
